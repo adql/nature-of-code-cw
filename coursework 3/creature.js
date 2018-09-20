@@ -14,9 +14,10 @@ function Creature(x, y) {
 
     // Three "psychology" variables to determine the importance of the
     // various behaviors
-    this.sepWeight = random(1, 3);
-    this.chaseWeight = random(6, 10);
-    this.fleeWeight = random(8, 12);
+    this.sepWeight = random(1, 3); // importance of seperation
+    this.chaseWeight = random(6, 10); // importance of chasing
+    this.fleeWeight = random(8, 12);  // importance of fleeing
+    // Variable to hold creature's death status
     this.dead = false;
 
     // Main function for behaviour. Takes an array of creatures to
@@ -79,28 +80,36 @@ function Creature(x, y) {
 	this.acc.set(0, 0);
     }
 
-    this.chase = function(creature) {
-	var chase = p5.Vector.sub(creature.pos, this.pos);
-	if (chase.mag() < this.r) return -1;
-	chase.normalize();
-	chase.mult(this.chaseWeight);
-	return chase;
+    // Separating function. Takes creature to avoid and distance which
+    // was already calculated in the calling function (for efficiency)
+    this.separate = function(creature, d) {
+	// Set the direction away from the other creature
+	var sep = p5.Vector.sub(this.pos, creature.pos);
+	// Separating is relative to the distance
+	sep.normalize();
+	sep.div(d);
+	// Applying the imporance of separating
+	sep.mult(this.sepWeight);
+	return sep;
     }
 
+    // Fleeing function. Similar to separation except that it's not
+    // relative to the distance and it has a different importance
     this.flee = function(creature, d) {
 	var flee = p5.Vector.sub(this.pos, creature.pos);
-	flee.normalize();
-	flee.div(d);
-	flee.mult(this.fleeWeight);
+	flee.setMag(this.fleeWeight);
 	return flee;
     }
 
-    this.separate = function(creature, d) {
-	var sep = p5.Vector.sub(this.pos, creature.pos);
-	sep.normalize();
-	sep.div(d);
-	sep.mult(this.sepWeight);
-	return sep;
+    // Chasing function, takes an argument of chased creature
+    this.chase = function(creature) {
+	// set the direction of chasing towards the prey
+	var chase = p5.Vector.sub(creature.pos, this.pos);
+	// Inform the calling function if the prey was caught
+	if (chase.mag() < this.r) return -1;
+	// Set magnitude according to imporance of this behavior
+	chase.setMag(this.chaseWeight);
+	return chase;
     }
 
     this.eat = function(creature) {
