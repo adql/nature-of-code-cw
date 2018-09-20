@@ -9,8 +9,17 @@ function Creature(x, y) {
     this.vel = createVector(random(-1, 1), random(-1, 1));
     this.acc = createVector(0, 0);
     this.r = floor(random(MINUMUM_SIZE, MAXIMUM_SIZE + 1));
-    this.maxSpeed = random(2, 5);
-    this.maxForce = random(0.05, 0.2);
+
+    this.strength = 10;
+    this.strengthCountdown = int(random(200));
+    this.potMaxSpeed = random(2, 5);
+    this.potMaxForce = random(0.05, 0.2);
+
+    this.applyStrength = function() {
+	this.maxSpeed = map(this.strength, 0, 10, 0, this.potMaxSpeed);
+	this.maxForce = map(this.strength, 0, 10, 0, this.potMaxForce);
+    }
+    this.applyStrength();
 
     // Three "psychology" variables to determine the importance of the
     // various behaviors
@@ -78,6 +87,17 @@ function Creature(x, y) {
 	this.pos.add(this.vel);
 	this.wraparound();
 	this.acc.set(0, 0);
+
+	// Count down towards loosing strength
+	this.strengthCountdown--;
+	// And loose a point when it reaches 0
+	if (this.strengthCountdown == 0) {
+	    this.strength--;
+	    if (this.strength == 0) this.die();
+	    this.strengthCountdown = 200;
+	    // Update max speed and steering force
+	    this.applyStrength();
+	}
     }
 
     // Separating function. Takes creature to avoid and distance which
@@ -113,7 +133,9 @@ function Creature(x, y) {
     }
 
     this.eat = function(creature) {
-	console.log("eaten");
+	if (this.strength < 10) {
+	    this.strength = min(this.strength + creature.strength, 10);
+	}
 	creature.die();
     }
 
@@ -124,7 +146,7 @@ function Creature(x, y) {
 
     this.render = function() {
 	var theta = this.vel.heading()
-	fill(160);
+	fill(map(this.strength, 0, 10, 0, 200));
 	stroke(0);
 	strokeWeight(this.r / 8);
 	push();
