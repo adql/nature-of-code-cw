@@ -25,5 +25,5 @@ function draw() {
 }
 
 function mousePressed() {
-    zoo.birth(mouseX, mouseY);
+    zoo.more();
 }

@@ -33,6 +33,10 @@ function Zoo(size) {
 	}
     }
 
+    this.more = function() {
+	for (var i = 0; i < 10; i++) this.birth(random(width), random(height));
+    }
+
     // Used temporary for debugging
     // this.display = function() {
     // 	for (var i = 0; i < this.creatures.length; i++) {

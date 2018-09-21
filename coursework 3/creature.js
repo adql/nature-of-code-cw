@@ -9,6 +9,7 @@ function Creature(x, y) {
     this.vel = createVector(random(-1, 1), random(-1, 1));
     this.acc = createVector(0, 0);
     this.r = floor(random(MINUMUM_SIZE, MAXIMUM_SIZE + 1));
+    this.seed = random(10000);	// Seed for noise in walking function
 
     this.strength = 10;
     this.strengthCountdown = int(random(200));
@@ -75,10 +76,12 @@ function Creature(x, y) {
 	    steer.sub(this.velocity);
 	    // Limit to maximum steering force
 	    steer.limit(this.maxForce);
+	    // Finally, apply the steering to the acceleration
+	    this.applyForce(steer);
+	} else {
+	    // Without interaction, slow down
+	    this.walk()
 	}
-
-	// Finally, apply the steering to the acceleration
-	this.applyForce(steer);
 
 	// The usual acc to vel, speed limit, vel to pos, wrapping
 	// around the canvas and resetting acc.
@@ -130,6 +133,24 @@ function Creature(x, y) {
 	// Set magnitude according to imporance of this behavior
 	chase.setMag(this.chaseWeight);
 	return chase;
+    }
+
+    // Function for slowing down when there is no interest around
+    this.walk = function() {
+	// Slowing down to low speed
+	var slow = this.vel.copy();
+	slow.setMag(this.maxSpeed / 5);
+	// Apply Reynold's steering formula
+	slow.sub(this.vel);
+	// Reduce a bit
+	slow.div(100);
+	// Apply slowing down
+	this.applyForce(slow);
+
+	// Add causual walking with perlin noise
+	noiseSeed(this.seed);
+	var theta = (noise(frameCount / 50) - 0.5) / 10;
+	this.vel.rotate(theta);
     }
 
     this.eat = function(creature) {
