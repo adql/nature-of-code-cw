@@ -1,6 +1,8 @@
-var MINUMUM_SIZE = 2;		// Smallest creature possible
+var MINUMUM_SIZE = 4;		// Smallest creature possible
 var MAXIMUM_SIZE = 20;		// Largest creature possible
 var NEIGHBORHOOD = 100;		// Size of neighborhood
+var OLFACTION = 150;		// How far a vegetarian creature can
+				// sense fruits from
 var DESIRED_SEPARATION = 25;	// For the separation method
 
 function Creature(x, y) {
@@ -11,6 +13,11 @@ function Creature(x, y) {
     this.r = floor(random(MINUMUM_SIZE, MAXIMUM_SIZE + 1));
     this.seed = random(10000);	// Seed for noise in walking function
 
+    if (this.r < (MINUMUM_SIZE + MAXIMUM_SIZE) / 3) {
+	this.veggie = true;
+    } else {
+	this.veggie = boolean(int(random(0, 2)));
+    }
     this.strength = 10;
     this.strengthCountdown = int(random(200));
     this.potMaxSpeed = random(2, 5);
@@ -32,7 +39,7 @@ function Creature(x, y) {
 
     // Main function for behaviour. Takes an array of creatures to
     // calculate steering behavior for relevant members of the array
-    this.behave = function(creatures) {
+    this.behave = function(creatures, fruits) {
 	var steer = createVector(0, 0); // For summing steerings
 	var count = 0;		// count interactions for averaging
 
@@ -45,9 +52,10 @@ function Creature(x, y) {
 		// of behavior is desired depending on the difference
 		// in the sizes of the two creatures
 		var sizeDiff = this.r - creatures[i].r;
-		// if current creature is bigger then chase the other
-		if (sizeDiff > 5) {
-		    chasing = this.chase(creatures[i]);
+		// if current creature is a carnivore and bigger then
+		// chase the other
+		if (sizeDiff > 5 && this.veggie == false) {
+		    var chasing = this.chase(creatures[i]);
 		    // The chasing function returns -1 if the chaser
 		    // has cought the prey.
 		    if (chasing == -1) {
@@ -67,7 +75,17 @@ function Creature(x, y) {
 		count += 1;	// Add for averaging
 	    }
 	}
-	
+
+	// If the creature is vegetarian, then look for fruits
+	if (this.veggie == true) {
+	    var search = this.searchFruit(fruits);
+	    // If a fruit is desired, add to steer and count
+	    if (search != false) {
+		steer.add(search);
+		count++;
+	    }
+	}
+	    
 	// If there is interaction, apply the steering
 	if (count > 0) {
 	    steer.div(count);	// Average the sum of steerings
@@ -135,6 +153,47 @@ function Creature(x, y) {
 	return chase;
     }
 
+    // Function for searching for a fruit and eating it. Returns a
+    // steering force only for the closes fruit. If there is no fruit
+    // around, returns false
+    this.searchFruit = function(fruits) {
+	var closest = false;
+	// Search for the closest fruit
+	for (var i = 0; i < fruits.length; i++) {
+	    var distCurrent = this.pos.dist(fruits[i].pos);
+	    if (distCurrent < OLFACTION) {
+		if (closest == false) closest = i;
+		else {
+		    var distClosest = this.pos.dist(fruits[closest].pos)
+		    if (distCurrent < distClosest) closest = i;
+		}
+	    }
+	}
+
+	// If there's a fruit around seek for it
+	if (closest != false) {
+	    // If the fruit is close enough, eat it
+	    if (this.pos.dist(fruits[closest].pos) < this.r) {
+		// Tell the fruit object that it's been eaten
+		fruits[closest].beEaten();
+		// Add strength, limited to maximum possible
+		this.strength = min(this.strength + 4, 10);
+		// Return false so that no steering is added
+		return false;
+	    } else {
+		// set the direction of seeking towards the fruit
+		var seek = p5.Vector.sub(fruits[closest].pos, this.pos);
+		// Set magnitude according to imporance of this behavior
+		// (same as chasing for carnivors)
+		seek.setMag(this.chaseWeight);
+		return seek;
+	    }
+	} else {
+	    // If no fruit is around
+	    return false;
+	}
+    }
+
     // Function for slowing down when there is no interest around
     this.walk = function() {
 	// Slowing down to low speed
@@ -167,7 +226,13 @@ function Creature(x, y) {
 
     this.render = function() {
 	var theta = this.vel.heading()
-	fill(map(this.strength, 0, 10, 0, 200));
+	var fillValue = map(this.strength, 0, 10, 0, 200);
+	if (this.veggie == true) {
+	    fill(0, fillValue, 0);
+	} else {
+	    fill(fillValue, 0, 0);
+	}
+	// fill(map(this.strength, 0, 10, 0, 200));
 	stroke(0);
 	strokeWeight(this.r / 8);
 	push();

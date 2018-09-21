@@ -25,5 +25,7 @@ function draw() {
 }
 
 function mousePressed() {
-    zoo.more();
+    if (mouseButton === LEFT) zoo.moreCreatures(10);
+    if (mouseButton === CENTER) zoo.moreFruits(20);
+    return false;
 }
