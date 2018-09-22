@@ -1,7 +1,10 @@
+var canvas;
+
 var zoo;			// Zoo object to run the simulation
 
 function setup () {
-    createCanvas(1000, 800);
+    canvas = createCanvas(1000, 700);
+    canvas.parent('canvasContainer');
     // Everything runs in a Zoo object
     zoo = new Zoo();
 }
