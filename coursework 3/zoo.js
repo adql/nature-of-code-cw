@@ -1,7 +1,7 @@
 // A class to hold the creatures and the fruits with birth and death
 // functions
 
-function Zoo(size) {
+function Zoo() {
     this.creatures = [];		// Array to hold the creatures
     this.fruits = [];
 
@@ -17,15 +17,14 @@ function Zoo(size) {
 	this.fruits.push(fruit);
     }
 
-    // Initiallize the array with creatues and fruits using the above
-    // functions
-    for (var i = 0; i < size; i++) {
-	// creature = new Creature(random(width), random(height));
-	// this.creatures.push(creature);
-	this.birth(random(width), random(height));
-	this.fruit(random(width), random(height));
+    // Initiallize the array with 20 creatues and 20 fruits using the
+    // above functions
+    for (var i = 0; i < 20; i++) {
+	this.birth(random(width), random(height)); // a creature
+	this.fruit(random(width), random(height)); // a fruit
     }
 
+    // Main function to run the zoo
     this.run = function() {
 	// Render fruits
 	for (var i = 0; i < this.fruits.length; i++) {
@@ -66,11 +65,4 @@ function Zoo(size) {
     this.moreFruits = function(num) {
 	for (var i = 0; i < num; i++) this.fruit(random(width), random(height));
     }
-
-    // Used temporary for debugging
-    // this.display = function() {
-    // 	for (var i = 0; i < this.creatures.length; i++) {
-    // 	    console.log(i, ": ", this.creatures[i].dead);
-    // 	}
-    // }
 }
