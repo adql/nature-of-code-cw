@@ -1,3 +1,11 @@
+// Amir Dekel
+// Nature of Code | Kadenze
+// Coursework 3: Steering Forces
+//
+// A simulation of a zoo. Carnivor creatures search other creatures to
+// eat. Vegetarian creatures search for fruit. Still some unclear
+// gliches here.
+
 var canvas;
 
 var zoo;			// Zoo object to run the simulation
