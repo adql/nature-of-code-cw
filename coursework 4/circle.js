@@ -1,9 +1,6 @@
-// Circle class. A circle moves around (0, 0) with a noise function
-// (and therefore the calling function should translate the matrix)
-
 var NOISE_RATE = 0.01;		// Size of noise step (applied to
 				// frameRate)
-var RATIO = 0.7;		// Ratio of the circle to its limiting
+var RATIO = 0.85;		// Ratio of the circle to its limiting
 				// field (relating to x axis)
 
 function Circle(xField, yField) {
@@ -12,7 +9,7 @@ function Circle(xField, yField) {
     // Calculate the size of the circle determined by the RATIO
     // parameter
     this.r = xField * RATIO / 2
-    // Calculate the actual field
+    // Calculate the actual field of movement
     this.xField = xField - 2*this.r;
     this.yField = yField - 2*this.r;
 
