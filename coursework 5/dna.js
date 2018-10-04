@@ -1,7 +1,7 @@
 // DNA class
 
 function DNA(newgenes) {
-    var len = 20;
+    var len = 9;
     if (newgenes) {
 	this.genes = newgenes;
     } else {
@@ -13,14 +13,14 @@ function DNA(newgenes) {
 
     // Crossover function
     this.crossover = function(partner) {
-	var child = [];
+	var child = [];		// For the genes
 	var len = this.genes.length;
 	var cross = floor(random(len));
 	// An improved random crossover calculation to take an actual
-	// half of each dna
-	for (var i = 0; i < this.genes.length; i++) {
+	// half of each dna (e.g. [1 1 1 2 2 2 2 2 1 1])
+	for (var i = 0; i < len; i++) {
 	    if ((i >= cross && i < cross + len/2) ||
-		i < abs(cross - len/2)) child[i] = this.genes[i];
+		(cross > len/2 && i < abs(cross - len/2))) child[i] = this.genes[i];
 	    else child[i] = partner.genes[i];
 	}
 	var newgenes = new DNA(child);
