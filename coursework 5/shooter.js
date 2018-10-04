@@ -11,13 +11,13 @@ function Shooter(xloc) {
     // Variable to hold autoshoot mode
     this.autoShoot = false;
 
-    this.seedX = random(10000);	// Seed for automode movement
-    this.seedCannon = random(10000); // Seed for automode shooting
-
+    // Main function
     this.run = function() {
+	// Listen to user input
 	var shot = this.listen();
-	this.display();
+	this.render();
 
+	// Return shot (or false) to the world object
 	return shot;
     }
 
@@ -29,6 +29,7 @@ function Shooter(xloc) {
 	    // If shift is pressed, arrow keys rotate cannon
 	    if (keyIsDown(LEFT_ARROW)) this.theta -= 0.1;
 	    if (keyIsDown(RIGHT_ARROW)) this.theta += 0.1;
+	    // Limit cannon's movement
 	    this.theta = constrain(this.theta, -HALF_PI-QUARTER_PI, -QUARTER_PI);
 	} else {
 	    // Otherwise, arrow keys move the shooter left or right
@@ -40,7 +41,7 @@ function Shooter(xloc) {
 	if (keyIsDown(32)) {
 	    return this.shoot();
 	} else {
-	    // Keep counter to 0 so that next time a shot is immediate
+	    // Keep counter on 0 so that next shot is immediate
 	    this.shootCount = 0;
 	    return false;
 	}
@@ -50,7 +51,7 @@ function Shooter(xloc) {
     this.shoot = function() {
 	if (this.shootCount == 0) {
 	    // If it's time to shoot
-	    // Begin new cound
+	    // Begin new count (for autoshoot mode)
 	    this.shootCount = 10;
 	    // Create a shot object and return it
 	    var pos = this.pos.copy();
@@ -66,11 +67,14 @@ function Shooter(xloc) {
 	} else return false;	// Otherwise no autoshoot
     }
 
-    this.display = function() {
+    // Display the shooter
+    this.render = function() {
 	push();
 	translate(this.pos.x, this.pos.y);
+	// Body
 	rectMode(RADIUS);
 	rect(0, 0, 20, 16);
+	// Cannon
 	translate(0, -15);
 	rotate(this.theta);
 	rectMode(CORNER);

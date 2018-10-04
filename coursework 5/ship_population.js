@@ -1,36 +1,41 @@
 // Class that runs the ship population
 
 function ShipPopulation(num, m, mThres) {
-    this.ships = [];		// Array to hold the ship objects
+    this.ships = [];
     this.mutationRate = m;
     this.shipNumber = num;
-    this.threshold = mThres;
+    this.threshold = mThres;	// When reproduction should be
+				// initiated
 
     // Instantiate with random ships
     for (var i = 0; i < this.shipNumber; i++) {
 	this.ships.push(new Ship(new DNA()));
     }
 
+    // Main function
     this.run = function(shots) {
+	// Run over the ships
 	for (var i = this.ships.length-1; i >= 0; i--) {
-	// for (var i = 0; i < this.ships.length; i++) {
 	    var ship = this.ships[i];
+	    // Update and render
 	    ship.update(shots);
 	    ship.render();
 
+	    // Remove the ship from the array if it has exploded
 	    if (ship.destroyed) this.ships.splice(i, 1);
 	}
 
-	// If half of the ships have been destroyed, reproduce
+	// If reproduction threshold has been reached, reproduce
 	if (this.ships.length < this.shipNumber * this.threshold) {
 	    this.reproduction();
-	    round++;
+	    round++;		// For autoshooting activation
 	}
     }
 
     // Reproduction function based on surviving ships
     this.reproduction = function() {
-	// Mark the older generation
+	// Mark the older generation (to avoid parent-child
+	// reproduction)
 	var oldships = this.ships.length;
 	var i = oldships;
 	// Add until reaching standard ship number
@@ -46,10 +51,11 @@ function ShipPopulation(num, m, mThres) {
 	    var momgenes = this.ships[m].getDNA();
 	    var dadgenes = this.ships[d].getDNA();
 	    // Mate
-	    var child = momgenes.crossover(dadgenes);
+	    var childgenes = momgenes.crossover(dadgenes);
 	    // Mutate
-	    child.mutate(this.mutationRate);
-	    this.ships.push(new Ship(child));
+	    childgenes.mutate(this.mutationRate);
+	    // Create the ship with the new gene set
+	    this.ships.push(new Ship(childgenes));
 	    i++;
 	}
     }

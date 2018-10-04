@@ -7,37 +7,40 @@ function Ship(dna) {
     this.pos = createVector(random(width), random(0, height-100));
     // Begin with some random small velocity for natural feeling
     this.vel = createVector(random(-1, 1), random(-1, 1));
-    // this.vel = createVector(0, 0);
     this.acc = createVector(0, 0);
 
     // Seeds for random fly
     this.seedX = random(10000);
     this.seedY = random(10000);
 
-    this.destroyed = false;
+    this.destroyed = false;	// For informing the population object
 
     // Define certain characteristics with DNA
-    this.size = map(this.dna.genes[2], 0, 1, 50, 25);
-    this.maxSpeed = map(pow(this.dna.genes[0], 2), 0, 1, 2, 15);
-    this.maxForce = map(this.dna.genes[1], 0, 1, 0.05, 0.5);
+    this.size = map(this.dna.genes[0], 0, 1, 50, 25);
+    this.maxSpeed = map(pow(this.dna.genes[1], 2), 0, 1, 2, 15);
+    this.maxForce = map(this.dna.genes[2], 0, 1, 0.05, 0.5);
     // Emergency fleeing force is stronger than normal force but not
     // all ships have it
-    this.fleeForce = constrain(map(pow(this.dna.genes[7], 2), 0.3, 1, 0.1, 4), this.maxForce, 4);
+    this.fleeForce = constrain(map(pow(this.dna.genes[3], 3), 0.3, 1, 0.5, 5), 0, 5);
     // How careful the ship is from reaching the bottom
-    this.bottomFear = constrain(map(this.dna.genes[3], 0.2, 1, 0, 200), 0, 200);
+    this.bottomFear = constrain(map(this.dna.genes[4], 0.2, 1, 0, 200), 0, 200);
     // Weight of the random flying element
-    this.randomness = this.dna.genes[4];
-    // How fast to move across the noise function (influences style of
-    // flying)
-    this.noiseStep = map(this.dna.genes[8], 0, 1, 0.05, 0.001);
-    // Random sensitivity for detecting shots
-    this.radarSensitivity = map(this.dna.genes[5], 0, 1, 0, 500);
+    this.randomness = this.dna.genes[5];
+    // How fast to step through the noise function (influences style
+    // of flying)
+    this.noiseStep = map(this.dna.genes[6], 0, 1, 0.05, 0.001);
+    // Radar sensitivity for detecting shots
+    this.radarSensitivity = map(this.dna.genes[7], 0, 1, 0, 500);
     // Controls the alpha channel when the ship is rendered
-    this.visibility = map(pow(this.dna.genes[6], 2), 0, 1, 255, 50);
+    this.visibility = map(pow(this.dna.genes[8], 2), 0, 1, 255, 50);
 
+    // Main function
     this.update = function(shots) {
+	// Random fly
 	this.fly();
+	// Detect shots and avoid
 	this.radar(shots);
+	// Avoid ground if possible
 	if (height - this.pos.y < this.bottomFear) this.avoidBottom();
 	
 	this.vel.add(this.acc);
@@ -51,6 +54,7 @@ function Ship(dna) {
 	this.acc.set(0, 0);
     }
 
+    // Display the ship
     this.render = function() {
 	push();
 	stroke(255, this.visibility);
@@ -59,8 +63,8 @@ function Ship(dna) {
 	pop();
     }
 
-    // Random fly with perlin noise. Fly has a general direction
-    // downwards
+    // Random fly with perlin noise. The flight has a general
+    // direction downwards
     this.fly = function() {
 	// The direction in x is scaled to a value in (-1, 1);
 	noiseSeed(this.seedX);
@@ -98,7 +102,7 @@ function Ship(dna) {
 	// If there is a close shot, avoid it
 	if (closest) this.avoidShot(closest);
     }
-
+ 
     // Function for avoiding a shot
     this.avoidShot = function(shot) {
 	// The vector pointing from the shot to the ship
@@ -112,8 +116,7 @@ function Ship(dna) {
 	    var desired = p5.Vector.fromAngle(shot.vel.heading() + HALF_PI);
 	    // At max speed
 	    desired.setMag(this.maxSpeed);
-	    // Set the direction to the side that needs less movement
-	    // to avoid
+	    // Set the direction to the relevant side
 	    if (thetaDiff < 0) desired.rotate(PI);
 	    // Reynolds + limit force + apply
 	    desired.sub(this.vel);
@@ -122,13 +125,6 @@ function Ship(dna) {
 	    if (this.fleeForce > 0) desired.limit(this.fleeForce);
 	    else desired.limit(this.maxForce);
 	    this.applyForce(desired);
-
-	    // push();
-	    // stroke('red');
-	    // text(thetaDiff, this.pos.x-this.size/2, this.pos.y-10);
-	    // text(sin(abs(thetaDiff)) * pointing.mag(), this.pos.x-this.size/2, this.pos.y+10);
-	    // pop();
-	    // noLoop();
 	}
     }
 
@@ -160,6 +156,7 @@ function Ship(dna) {
 	this.acc.add(force);
     }
 
+    // Explode, called by a shot object
     this.explode = function() {
 	this.destroyed = true;
     }
