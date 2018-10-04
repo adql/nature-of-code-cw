@@ -13,8 +13,7 @@ function Shooter(xloc) {
     this.seedCannon = random(10000); // Seed for automode shooting
 
     this.run = function() {
-	if (autoMode) var shot = this.auto();
-	else var shot = this.listen();
+	var shot = this.listen();
 	this.display();
 
 	return shot;
@@ -39,15 +38,6 @@ function Shooter(xloc) {
 	if (keyIsDown(32)) {
 	    return this.shoot();
 	} else return false;
-    }
-
-    this.auto = function() {
-	noiseSeed(this.seedX);
-	this.pos.x = noise(frameCount / 100) * (width+100) - 50;
-	noiseSeed(this.seedCannon);
-	this.theta = noise(frameCount / 100) * QUARTER_PI*3 - QUARTER_PI*3;
-
-	return this.shoot();
     }
 
     // Shooting function. Returns a shot object
