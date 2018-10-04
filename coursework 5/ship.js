@@ -17,16 +17,23 @@ function Ship(dna) {
     this.destroyed = false;
 
     // Define certain characteristics with DNA
-    this.maxSpeed = map(pow(this.dna.genes[0], 2), 0, 1, 2, 15);
-    this.maxForce = map(pow(this.dna.genes[1], 2), 0, 1, 0.05, 0.5);
     this.size = map(this.dna.genes[2], 0, 1, 50, 25);
+    this.maxSpeed = map(pow(this.dna.genes[0], 2), 0, 1, 2, 15);
+    this.maxForce = map(this.dna.genes[1], 0, 1, 0.05, 0.5);
+    // Emergency fleeing force is stronger than normal force but not
+    // all ships have it
+    this.fleeForce = constrain(map(pow(this.dna.genes[7], 2), 0.3, 1, 0.1, 4), this.maxForce, 4);
     // How careful the ship is from reaching the bottom
     this.bottomFear = constrain(map(this.dna.genes[3], 0.2, 1, 0, 200), 0, 200);
+    // Weight of the random flying element
     this.randomness = this.dna.genes[4];
+    // How fast to move across the noise function (influences style of
+    // flying)
+    this.noiseStep = map(this.dna.genes[8], 0, 1, 0.05, 0.001);
+    // Random sensitivity for detecting shots
     this.radarSensitivity = map(this.dna.genes[5], 0, 1, 0, 500);
+    // Controls the alpha channel when the ship is rendered
     this.visibility = map(pow(this.dna.genes[6], 2), 0, 1, 255, 50);
-    // Emergency fleeing force is stronger than normal force
-    this.fleeForce = constrain(map(pow(this.dna.genes[7], 2), 0.3, 1, 0.1, 4), this.maxForce, 4);
 
     this.update = function(shots) {
 	this.fly();
@@ -57,10 +64,10 @@ function Ship(dna) {
     this.fly = function() {
 	// The direction in x is scaled to a value in (-1, 1);
 	noiseSeed(this.seedX);
-	var flyX = noise(frameCount * 0.01) * 2 - 1;
+	var flyX = noise(frameCount * this.noiseStep) * 2 - 1;
 	// The direction in y is scaled to a value in (-0.8, 1.2) for downwards movement
 	noiseSeed(this.seedY);
-	var flyY = noise(frameCount * 0.01) * 2 - 0.8;
+	var flyY = noise(frameCount * this.noiseStep) * 2 - 0.8;
 	var fly = createVector(flyX, flyY);
 	// The random flying weight is the maximum speed scaled by the
 	// "randomness" character of the ship

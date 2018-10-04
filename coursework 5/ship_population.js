@@ -10,7 +10,6 @@ function ShipPopulation(num, m, mThres) {
     for (var i = 0; i < this.shipNumber; i++) {
 	this.ships.push(new Ship(new DNA()));
     }
-    console.log(mThres);
 
     this.run = function(shots) {
 	for (var i = this.ships.length-1; i >= 0; i--) {
@@ -23,7 +22,10 @@ function ShipPopulation(num, m, mThres) {
 	}
 
 	// If half of the ships have been destroyed, reproduce
-	if (this.ships.length < this.shipNumber * this.threshold) this.reproduction();
+	if (this.ships.length < this.shipNumber * this.threshold) {
+	    this.reproduction();
+	    round++;
+	}
     }
 
     // Reproduction function based on surviving ships

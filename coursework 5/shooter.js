@@ -8,6 +8,8 @@ function Shooter(xloc) {
 
     // Counter for intervals between shots
     this.shootCount = 0;
+    // Variable to hold autoshoot mode
+    this.autoShoot = false;
 
     this.seedX = random(10000);	// Seed for automode movement
     this.seedCannon = random(10000); // Seed for automode shooting
@@ -37,14 +39,18 @@ function Shooter(xloc) {
 	// Listen to shooting and return a shot if there is one
 	if (keyIsDown(32)) {
 	    return this.shoot();
-	} else return false;
+	} else {
+	    // Keep counter to 0 so that next time a shot is immediate
+	    this.shootCount = 0;
+	    return false;
+	}
     }
 
     // Shooting function. Returns a shot object
     this.shoot = function() {
 	if (this.shootCount == 0) {
 	    // If it's time to shoot
-	    // Reset counter
+	    // Begin new cound
 	    this.shootCount = 10;
 	    // Create a shot object and return it
 	    var pos = this.pos.copy();
@@ -52,11 +58,12 @@ function Shooter(xloc) {
 	    pos.y -= 15;
 	    var shot = new Shot(pos, this.theta);
 	    return shot;
-	} else {
-	    // Otherwise continue countdown and return false
+	} else if (this.autoShoot) {
+	    // Otherwise continue countdown if autoShoot mode is
+	    // enabled
 	    this.shootCount--;
 	    return false;
-	}
+	} else return false;	// Otherwise no autoshoot
     }
 
     this.display = function() {

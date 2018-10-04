@@ -5,11 +5,13 @@ var SHIP_NUMBER = 20;
 var canvas;
 
 var world;
+var round;
 
 function setup() {
     canvas = createCanvas(800, 600);
     canvas.parent('canvas-container');
 
+    round = 0;
     world = new World(SHIP_NUMBER, MUTATION_RATE, MULT_THRESHOLD);
 }
 

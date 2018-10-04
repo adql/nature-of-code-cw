@@ -11,6 +11,9 @@ function Shot(loc, dir) {
     // Actual position is at the front of the shot
     this.pos = loc.copy().add(this.vel);
 
+    // Did the shot hit?
+    this.hit = false;
+
     this.update = function() {
 	// this.back.add(this.vel);
 	this.pos.add(this.vel);
@@ -34,12 +37,13 @@ function Shot(loc, dir) {
 	    // ship
 	    var diff = p5.Vector.sub(ship.pos, tail);
 	    if (diff.mag() < SHOT_SPEED + ship.size/2) {
-		// The check if the shot is actually covering the ship
+		// Then check if the shot is actually covering the
+		// ship
 		var theta = abs(this.vel.heading() - diff.heading());
 		var d = sin(theta) * diff.mag();
 		if (d < ship.size/2) {
+		    this.hit = true;
 		    ship.explode();
-		    console.log("theta: ", theta, "d: ", d);
 		}
 	    }
 	}
@@ -63,5 +67,10 @@ function Shot(loc, dir) {
 	if (this.pos.y < -20) {
 	    return true;
 	} else return false;
+    }
+
+    // Function for telling if the shot hit
+    this.didHit = function() {
+	return this.hit;
     }
 }
