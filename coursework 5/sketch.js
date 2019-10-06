@@ -2,7 +2,11 @@
 // Nature of Code | Kadenze
 // Coursework 5: Genetic Algorithms
 //
-// A small game of shooting ships. The ships become through evolution smarter and harder to hit. They also learn to avoid crashing to the earth. At some point the player is granted automatic shooting since the game becomes harder.
+// A small game of shooting ships. The ships become through evolution
+// smarter and harder to hit. They also learn to avoid crashing to the
+// earth. At some point the player is granted automatic shooting since
+// the game becomes harder.
+//
 // ARROWS to move; SPACE to shoot; hold SHIFT to rotate cannon
 
 // Some key constants for easy manipulation

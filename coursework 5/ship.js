@@ -169,7 +169,7 @@ function Ship(dna) {
     // game is based on interactive selection so an actual fitness
     // function is not needed. The ship fits by the very fact that it
     // exists and this function may be called
-    this.calcFitness() = function() {
+    this.calcFitness = function() {
 	return true;
     }
 }
