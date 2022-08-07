@@ -13,7 +13,7 @@ var xoff;			// variable for the noise function
 
 function setup() {
     // Create canvas and the flower shooter (the only persistent object)
-    createCanvas(800, 500);
+    createCanvas(800, 500).parent('canvas-container');
     shooter = new FlowerShooter();
 }
 
